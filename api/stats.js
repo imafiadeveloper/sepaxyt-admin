@@ -27,11 +27,16 @@ module.exports = async (req, res) => {
     if (!admin) return res.status(401).json({ success: false, reason: 'Unauthorized' });
 
     try {
-        const allKeys = await redis.smembers('keys:all') || [];
-        const now = new Date();
+        let allKeys = [];
+        // Agar Super Admin hai toh sab keys, warna sirf apni
+        if (admin.admin === 'default') {
+            allKeys = await redis.smembers('keys:all') || [];
+        } else {
+            allKeys = await redis.smembers(`keys:${admin.admin}`) || [];
+        }
 
-        let active = 0, expired = 0, disabled = 0, lifetime = 0;
-        let singleDevice = 0, multiDevice = 0, totalDevices = 0;
+        const now = new Date();
+        let active = 0, expired = 0, disabled = 0, lifetime = 0, totalDevices = 0;
 
         for (const k of allKeys) {
             const data = await redis.get(`key:${k}`);
@@ -44,9 +49,6 @@ module.exports = async (req, res) => {
             else if (new Date(parsed.expiry) < now) expired++;
             else active++;
 
-            if (parsed.deviceLimit === 1) singleDevice++;
-            else multiDevice++;
-
             const devices = await redis.hgetall(`devices:${k}`) || {};
             totalDevices += Object.keys(devices).length;
         }
@@ -56,7 +58,7 @@ module.exports = async (req, res) => {
             stats: {
                 total: allKeys.length,
                 active, expired, disabled, lifetime,
-                singleDevice, multiDevice, totalDevices,
+                totalDevices,
             }
         });
 
