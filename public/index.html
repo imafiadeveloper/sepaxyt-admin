@@ -2,85 +2,157 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SepaxYt Admin Panel — Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SepaxYt Auth</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-    body { background: radial-gradient(circle at top, #0a1929 0%, #000814 100%); font-family: 'Segoe UI', Tahoma, sans-serif; }
-    .glow { box-shadow: 0 0 40px rgba(0, 217, 255, 0.15); }
-    .btn-glow:hover { box-shadow: 0 0 25px rgba(0, 217, 255, 0.6); }
-    .input-glow:focus { box-shadow: 0 0 15px rgba(0, 217, 255, 0.4); }
+    body { background: radial-gradient(circle at top, #0a1929 0%, #000814 100%); font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
+    .tab-active { background: rgba(0, 217, 255, 0.15); border-bottom: 2px solid #00d9ff; color: #00d9ff; }
 </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
-<div class="w-full max-w-md">
-    <div class="bg-slate-900/80 backdrop-blur-lg rounded-2xl p-8 glow border border-cyan-500/20">
-        <div class="text-center mb-8">
-            <div class="inline-block px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg mb-4">
-                <span class="text-white font-bold text-xl tracking-wider">SEPAXYT</span>
+<div class="w-full max-w-sm">
+    <div class="bg-slate-900/80 backdrop-blur-lg rounded-2xl p-6 border border-cyan-500/20 shadow-[0_0_30px_rgba(0,217,255,0.1)]">
+        
+        <div class="text-center mb-6">
+            <div class="inline-block px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg mb-3">
+                <span class="text-white font-bold text-lg tracking-wider">SEPAXYT</span>
             </div>
-            <h1 class="text-2xl font-bold text-white mb-1">Admin Panel</h1>
-            <p class="text-slate-400 text-sm">License Management System</p>
         </div>
 
-        <form id="loginForm" class="space-y-5">
-            <div>
-                <label class="block text-cyan-400 text-sm font-semibold mb-2">🔐 Admin Password</label>
-                <input type="password" id="password" placeholder="Enter password"
-                    class="w-full px-4 py-3 bg-slate-800/70 border border-slate-700 rounded-lg text-white placeholder-slate-500 input-glow focus:outline-none focus:border-cyan-400 transition"
-                    required>
-            </div>
+        <!-- Tabs -->
+        <div class="flex border-b border-slate-700 mb-6">
+            <button onclick="switchTab('login')" id="tab-login" class="flex-1 py-2 text-sm font-bold text-cyan-400 tab-active">Login</button>
+            <button onclick="switchTab('register')" id="tab-register" class="flex-1 py-2 text-sm font-bold text-slate-400">Register</button>
+        </div>
 
-            <button type="submit"
-                class="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-lg btn-glow transition-all duration-300 transform hover:scale-[1.02]">
-                🚀 LOGIN
-            </button>
+        <!-- LOGIN FORM -->
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label class="block text-cyan-400 text-xs font-bold mb-1">Username</label>
+                <input type="text" id="loginUser" placeholder="Enter username" class="w-full px-3 py-2.5 bg-slate-800/70 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-cyan-400">
+            </div>
+            <div>
+                <label class="block text-cyan-400 text-xs font-bold mb-1">Password</label>
+                <input type="password" id="loginPass" placeholder="Enter password" class="w-full px-3 py-2.5 bg-slate-800/70 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-cyan-400">
+            </div>
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="rememberMe" class="w-4 h-4 rounded border-slate-700 bg-slate-800 text-cyan-500 focus:ring-cyan-500">
+                <span class="text-xs text-slate-400">Remember Me</span>
+            </label>
+            <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-lg text-sm hover:scale-[1.02] transition">LOGIN</button>
         </form>
 
-        <div id="errorMsg" class="hidden mt-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm text-center"></div>
+        <!-- REGISTER FORM -->
+        <form id="registerForm" class="space-y-4 hidden">
+            <div>
+                <label class="block text-cyan-400 text-xs font-bold mb-1">Username</label>
+                <input type="text" id="regUser" placeholder="Choose username" class="w-full px-3 py-2.5 bg-slate-800/70 border border-slate-700 rounded-lg text-white text-sm">
+            </div>
+            <div>
+                <label class="block text-cyan-400 text-xs font-bold mb-1">Password</label>
+                <input type="password" id="regPass" placeholder="Create password" class="w-full px-3 py-2.5 bg-slate-800/70 border border-slate-700 rounded-lg text-white text-sm">
+            </div>
+            <div>
+                <label class="block text-cyan-400 text-xs font-bold mb-1">Confirm Password</label>
+                <input type="password" id="regPassConfirm" placeholder="Repeat password" class="w-full px-3 py-2.5 bg-slate-800/70 border border-slate-700 rounded-lg text-white text-sm">
+            </div>
+            <div>
+                <label class="block text-cyan-400 text-xs font-bold mb-1">Referral Code (Optional)</label>
+                <input type="text" id="regRef" placeholder="REF-XXXXXX" class="w-full px-3 py-2.5 bg-slate-800/70 border border-slate-700 rounded-lg text-white text-sm">
+            </div>
+            <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg text-sm hover:scale-[1.02] transition">CREATE ACCOUNT</button>
+        </form>
 
-        <div class="mt-8 text-center">
-            <p class="text-slate-500 text-xs">© 2026 SepaxYt • All Rights Reserved</p>
-        </div>
+        <div id="errorMsg" class="hidden mt-3 p-2 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-xs text-center"></div>
     </div>
 </div>
 
 <script>
+function switchTab(tab) {
+    document.getElementById('tab-login').classList.toggle('tab-active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('tab-active', tab === 'register');
+    document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+    document.getElementById('errorMsg').classList.add('hidden');
+}
+
+function showError(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = '❌ ' + msg;
+    el.classList.remove('hidden');
+}
+
+// Auto-fill Saved Login
+window.onload = () => {
+    const savedUser = localStorage.getItem('saved_user');
+    const savedPass = localStorage.getItem('saved_pass');
+    if (savedUser && savedPass) {
+        document.getElementById('loginUser').value = savedUser;
+        document.getElementById('loginPass').value = savedPass;
+        document.getElementById('rememberMe').checked = true;
+    }
+};
+
+// LOGIN SUBMIT
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const password = document.getElementById('password').value;
-    const errorMsg = document.getElementById('errorMsg');
-    const btn = e.target.querySelector('button');
-
-    errorMsg.classList.add('hidden');
-    btn.disabled = true;
-    btn.textContent = '⏳ Checking...';
+    const username = document.getElementById('loginUser').value;
+    const password = document.getElementById('loginPass').value;
+    const remember = document.getElementById('rememberMe').checked;
 
     try {
         const res = await fetch('/api/auth', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password })
+            body: JSON.stringify({ action: 'login', username, password })
         });
         const data = await res.json();
 
         if (data.success) {
+            if (remember) {
+                localStorage.setItem('saved_user', username);
+                localStorage.setItem('saved_pass', password);
+            } else {
+                localStorage.removeItem('saved_user');
+                localStorage.removeItem('saved_pass');
+            }
             localStorage.setItem('sepaxyt_token', data.token);
+            localStorage.setItem('sepaxyt_tenant', data.tenant);
             window.location.href = '/dashboard.html';
         } else {
-            errorMsg.textContent = '❌ ' + (data.reason || 'Login failed');
-            errorMsg.classList.remove('hidden');
+            showError(data.reason);
         }
-    } catch (err) {
-        errorMsg.textContent = '❌ Server error: ' + err.message;
-        errorMsg.classList.remove('hidden');
-    } finally {
-        btn.disabled = false;
-        btn.textContent = '🚀 LOGIN';
-    }
+    } catch (err) { showError('Server error'); }
+});
+
+// REGISTER SUBMIT
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('regUser').value;
+    const password = document.getElementById('regPass').value;
+    const confirmPassword = document.getElementById('regPassConfirm').value;
+    const refCode = document.getElementById('regRef').value;
+
+    try {
+        const res = await fetch('/api/auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'register', username, password, confirmPassword, refCode })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            alert('✅ Account Created! Logging you in...');
+            localStorage.setItem('sepaxyt_token', data.token);
+            localStorage.setItem('sepaxyt_tenant', data.tenant);
+            window.location.href = '/dashboard.html';
+        } else {
+            showError(data.reason);
+        }
+    } catch (err) { showError('Server error'); }
 });
 </script>
-
 </body>
 </html>
