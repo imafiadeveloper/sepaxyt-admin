@@ -3,6 +3,7 @@
   "rewrites": [
     { "source": "/:tenant/connect", "destination": "/api/connect?tenant=:tenant" },
     { "source": "/connect", "destination": "/api/connect" },
+    { "source": "/defend/:path*", "destination": "/api/connect" },
     { "source": "/api/auth", "destination": "/api/auth" },
     { "source": "/api/keys", "destination": "/api/keys" },
     { "source": "/api/stats", "destination": "/api/stats" },
