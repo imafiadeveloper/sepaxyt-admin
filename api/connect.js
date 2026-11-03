@@ -1,67 +1,87 @@
-// ============================================================================
-//  api/connect.js — MEGA PROXY (Tumhara panel, Original ka data)
-// ============================================================================
+const { Redis } = require('@upstash/redis');
 
-const fetch = require('node-fetch');
+const redis = new Redis({
+    url: "https://exotic-louse-124123.upstash.io",
+    token: "gQAAAAAAAeTbAAIgcDE0NjNmMmUwMTY2MWY0NmY2ODFkOThiMDYyN2Y2M2QyOA",
+});
+
+module.exports.config = { api: { bodyParser: false } };
 
 module.exports = async (req, res) => {
-    // CORS Headers
+    // 🌐 CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    // GET request (Browser check)
+    // 📄 GET Request (Browser se check karne ke liye)
     if (req.method === 'GET') {
-        return res.status(200).json({ web_info: { _client: "SepaxYt Proxy", status: "Active" } });
+        return res.status(200).json({
+            status: true,
+            message: "SepaxYt Universal Server Active",
+            author: "SepaxYt",
+            time: new Date().toISOString()
+        });
     }
 
+    // 🚀 POST Request (Game se aane wali request)
     try {
-        // Jo bhi data game bhejega (Encrypted ya plain), hum waisa hi original panel pe bhejenge
-        let body = req.body;
-        if (!body) {
-            // Agar body stream me hai toh read karo
-            const chunks = [];
-            for await (const chunk of req) chunks.push(chunk);
-            body = Buffer.concat(chunks);
+        // Body read karo (chahe encrypted ho ya normal)
+        let rawBody = '';
+        for await (const chunk of req) {
+            rawBody += chunk;
         }
 
-        console.log("[PROXY] Forwarding to Original Panel...");
+        console.log(`[HIT] New request from game. Size: ${rawBody.length}`);
 
-        // Original Panel ki details
-        // (Yahan tum jo bhi original panel replace kar rahe ho, uska URL daal sakte ho)
-        const ORIGINAL_URL = "https://api.defendserver.shop/defend/connect"; 
-        
-        const originalResponse = await fetch(ORIGINAL_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded', // Original panel format
-                'User-Agent': req.headers['user-agent'] || 'AbsoluteX/2.0',
-                'Accept': 'application/json'
-            },
-            body: body
+        // 🔥 SMART TRACKING (Optional)
+        // Agar body me key jaisa kuch dikhe toh track karlo
+        if (rawBody.length > 10 && rawBody.length < 500) {
+            try {
+                await redis.lpush('game_logs', `[${new Date().toISOString()}] Data: ${rawBody.slice(0, 50)}`);
+                await redis.ltrim('game_logs', 0, 99); // Sirf last 100 logs rakho
+            } catch (e) {}
+        }
+
+        // ⚡ UNLIMITED SUCCESS BYPASS
+        // Game chahe kuch bhi bheje, usko hamesha Success milega
+        return res.status(200).json({
+            status: true,
+            message: "Login Success",
+            reason: "SUCCESS",
+            data: {
+                modname: "SepaxYt",
+                mod_status: "Active",
+                floting: "SepaxYt Active",
+                token: "acc385a05b255752a8c347f21d204818",
+                expiredDate: "2099-12-31 23:59:59",
+                EXP: "2099-12-31 23:59:59",
+                exdate: "2099-12-31 23:59:59",
+                rng: 1729864200,
+                device: 10000,
+                max_devices: 10000,
+                // Extra fields jo kuch games maangte hain
+                credit: "SepaxYt",
+                real: "PUBG-SEPAXYT-VIP",
+                ESP: "on", Item: "on", AIM: "on",
+                SilentAim: "on", BulletTrack: "on",
+                Floating: "on", Memory: "on", Setting: "on"
+            }
         });
 
-        // Original panel ka exact response nikal lo
-        const data = await originalResponse.text();
-        
-        console.log("[PROXY] Response received from Original Panel!");
-
-        // Wapas game ko bhej do
-        // Game ko farq nahi padega ki data kahan se aaya
-        res.status(200).send(data);
-
     } catch (e) {
-        console.error('[PROXY ERROR]', e.message);
-        // Agar original panel down hai, toh fallback fake JSON
-        res.status(200).json({
+        console.error('[ERROR]', e.message);
+        // Agar server crash ho jaye toh bhi game ko success hi mile
+        return res.status(200).json({
             status: true,
+            message: "Login Success (Fallback)",
             data: {
                 modname: "SepaxYt",
                 mod_status: "Active",
                 token: "acc385a05b255752a8c347f21d204818",
                 expiredDate: "2099-12-31 23:59:59",
+                EXP: "2099-12-31 23:59:59",
                 rng: 1729864200
             }
         });
