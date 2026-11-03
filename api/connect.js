@@ -8,81 +8,59 @@ const redis = new Redis({
 module.exports.config = { api: { bodyParser: false } };
 
 module.exports = async (req, res) => {
-    // 🌐 CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    // 📄 GET Request (Browser se check karne ke liye)
+    // GET Request (Browser check)
     if (req.method === 'GET') {
-        return res.status(200).json({
-            status: true,
-            message: "SepaxYt Universal Server Active",
-            author: "SepaxYt",
-            time: new Date().toISOString()
-        });
+        return res.status(200).json({ status: true, message: "SepaxYt Universal Bypass Active" });
     }
 
-    // 🚀 POST Request (Game se aane wali request)
     try {
-        // Body read karo (chahe encrypted ho ya normal)
+        // Game ka data read karo
         let rawBody = '';
-        for await (const chunk of req) {
-            rawBody += chunk;
-        }
+        for await (const chunk of req) rawBody += chunk;
+        console.log(`[BYPASS] Incoming Request. Size: ${rawBody.length}`);
 
-        console.log(`[HIT] New request from game. Size: ${rawBody.length}`);
-
-        // 🔥 SMART TRACKING (Optional)
-        // Agar body me key jaisa kuch dikhe toh track karlo
-        if (rawBody.length > 10 && rawBody.length < 500) {
-            try {
-                await redis.lpush('game_logs', `[${new Date().toISOString()}] Data: ${rawBody.slice(0, 50)}`);
-                await redis.ltrim('game_logs', 0, 99); // Sirf last 100 logs rakho
-            } catch (e) {}
-        }
-
-        // ⚡ UNLIMITED SUCCESS BYPASS
-        // Game chahe kuch bhi bheje, usko hamesha Success milega
+        // 🔥 GAME KO EXACT WAHI RESPONSE DO JO USNE ORIGINAL PANEL SE LIYA THA
         return res.status(200).json({
             status: true,
-            message: "Login Success",
-            reason: "SUCCESS",
             data: {
-                modname: "SepaxYt",
-                mod_status: "Active",
-                floting: "SepaxYt Active",
-                token: "acc385a05b255752a8c347f21d204818",
-                expiredDate: "2099-12-31 23:59:59",
+                modname: "SepaxYt VIP",
+                mod_status: "SepaxYt Active - SAFE",
+                credit: "SepaxYt Panel",
+                token: "7a116ce0682ed22580b36f22ef555280", 
+                device: "1500",
                 EXP: "2099-12-31 23:59:59",
-                exdate: "2099-12-31 23:59:59",
-                rng: 1729864200,
-                device: 10000,
-                max_devices: 10000,
-                // Extra fields jo kuch games maangte hain
-                credit: "SepaxYt",
-                real: "PUBG-SEPAXYT-VIP",
-                ESP: "on", Item: "on", AIM: "on",
-                SilentAim: "on", BulletTrack: "on",
-                Floating: "on", Memory: "on", Setting: "on"
+                rng: 1793748517,
+                license: "license",
+                LOGO: "https://raw.githubusercontent.com/legionalpha18/GameBox/main/logo/jalba.png",
+                ALLIAS: "SEPAXYT X POWER",
+                appVer: "1.0.0.1",
+                gameVer: "4.5.0",
+                telegram: "sepaxyt_support",
+                URL: "https://github.com/legionalpha18/GameBox/raw/refs/heads/main/twitter2.zip",
+                VERSION: "111",
+                appCrc: "2e57cb54",
+                AppSha: "9ef6a9cff7eca272742382656e4ba8accab7105295916e717092854de0053656"
             }
         });
 
     } catch (e) {
         console.error('[ERROR]', e.message);
-        // Agar server crash ho jaye toh bhi game ko success hi mile
+        // Fallback: Agar error aaye tab bhi Success bhej do
         return res.status(200).json({
             status: true,
-            message: "Login Success (Fallback)",
             data: {
                 modname: "SepaxYt",
                 mod_status: "Active",
-                token: "acc385a05b255752a8c347f21d204818",
-                expiredDate: "2099-12-31 23:59:59",
+                token: "7a116ce0682ed22580b36f22ef555280",
                 EXP: "2099-12-31 23:59:59",
-                rng: 1729864200
+                rng: 1793748517,
+                VERSION: "111"
             }
         });
     }
